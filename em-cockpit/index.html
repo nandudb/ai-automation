@@ -1,0 +1,519 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta name="description" content="A 60-second morning briefing tool for Engineering Managers — paste your team state and get a focus list, risks to chase, and decisions waiting on you, before standup." />
+<title>EM Cockpit — Run your engineering week in 60 seconds</title>
+<style>
+  /* ---------- TOKENS ---------- */
+  :root{
+    --bg:#06080d;
+    --bg-elev:#0c1018;
+    --bg-card:#10151f;
+    --line:#1f2733;
+    --line-strong:#2a3445;
+    --ink:#e9eef7;
+    --ink-mute:#8a95aa;
+    --ink-dim:#5a6478;
+    --accent:#7cf7d2;       /* primary cyan/mint */
+    --accent-2:#9d8cff;     /* secondary violet */
+    --warn:#ffb86b;
+    --bad:#ff7a8a;
+    --good:#8af0a0;
+    --radius:14px;
+    --shadow:0 0 0 1px rgba(255,255,255,.04), 0 20px 60px rgba(0,0,0,.45);
+    --mono:'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    --sans:Inter, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  }
+
+  /* ---------- RESET ---------- */
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0;background:var(--bg);color:var(--ink);font-family:var(--sans);line-height:1.5;-webkit-font-smoothing:antialiased}
+  a{color:var(--accent);text-decoration:none}
+  a:hover{text-decoration:underline}
+  button{font-family:inherit}
+  ::selection{background:var(--accent);color:#001215}
+
+  /* ---------- LAYOUT ---------- */
+  .shell{max-width:1140px;margin:0 auto;padding:28px 24px 80px}
+
+  /* ---------- HEADER ---------- */
+  .topbar{display:flex;align-items:center;justify-content:space-between;gap:16px;padding-bottom:24px;border-bottom:1px solid var(--line)}
+  .brand{display:flex;align-items:center;gap:12px}
+  .brand-mark{width:38px;height:38px;border-radius:10px;background:linear-gradient(135deg,var(--accent),var(--accent-2));display:grid;place-items:center;font-family:var(--mono);font-weight:800;color:#001a17;font-size:14px}
+  .brand-name{font-family:var(--mono);font-size:12px;letter-spacing:.18em;color:var(--ink-mute)}
+  .brand-name b{color:var(--ink)}
+  .tags{display:flex;gap:8px;flex-wrap:wrap}
+  .tag{font-family:var(--mono);font-size:10.5px;letter-spacing:.16em;padding:6px 10px;border-radius:999px;border:1px solid var(--line-strong);color:var(--ink-mute)}
+  .tag.ai{color:var(--accent);border-color:rgba(124,247,210,.25);background:rgba(124,247,210,.06)}
+
+  /* ---------- HERO ---------- */
+  .hero{padding:54px 0 36px}
+  .kicker{font-family:var(--mono);font-size:12px;letter-spacing:.22em;color:var(--ink-mute);margin-bottom:16px}
+  h1{font-size:clamp(36px,5.4vw,64px);line-height:1.04;letter-spacing:-.02em;margin:0 0 18px;font-weight:700}
+  h1 .hl{background:linear-gradient(90deg,var(--accent),var(--accent-2));-webkit-background-clip:text;background-clip:text;color:transparent}
+  .lead{font-size:17px;color:var(--ink-mute);max-width:680px;margin:0}
+  .lead b{color:var(--ink);font-weight:600}
+
+  /* ---------- GRID ---------- */
+  .grid{display:grid;grid-template-columns:1fr 1fr;gap:22px;margin-top:40px}
+  @media (max-width:900px){ .grid{grid-template-columns:1fr} }
+
+  /* ---------- CARD ---------- */
+  .card{background:var(--bg-card);border:1px solid var(--line);border-radius:var(--radius);padding:22px;box-shadow:var(--shadow)}
+  .card-h{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px}
+  .card-title{font-family:var(--mono);font-size:11px;letter-spacing:.22em;color:var(--ink-mute)}
+  .pill{font-family:var(--mono);font-size:10px;letter-spacing:.14em;padding:4px 8px;border-radius:6px;background:var(--bg-elev);color:var(--ink-mute);border:1px solid var(--line)}
+
+  /* ---------- TABS ---------- */
+  .tabs{display:flex;gap:6px;margin-bottom:16px;border-bottom:1px solid var(--line);padding-bottom:0}
+  .tab{padding:10px 14px;border:none;background:transparent;color:var(--ink-mute);font-family:var(--mono);font-size:11px;letter-spacing:.16em;cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-1px}
+  .tab.active{color:var(--ink);border-bottom-color:var(--accent)}
+  .tab[disabled]{opacity:.4;cursor:not-allowed}
+
+  .pane{display:none}
+  .pane.active{display:block}
+
+  /* ---------- FORM ---------- */
+  .row{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px}
+  @media (max-width:560px){ .row{grid-template-columns:1fr} }
+  label{display:block;font-family:var(--mono);font-size:10.5px;letter-spacing:.14em;color:var(--ink-mute);margin-bottom:6px;text-transform:uppercase}
+  textarea, input[type="text"], input[type="password"], select{
+    width:100%;background:var(--bg-elev);color:var(--ink);border:1px solid var(--line);border-radius:8px;padding:10px 12px;font-family:var(--sans);font-size:14px;outline:none;transition:border-color .15s
+  }
+  textarea{min-height:88px;resize:vertical;font-family:var(--mono);font-size:13px;line-height:1.5}
+  textarea:focus, input:focus, select:focus{border-color:var(--accent)}
+  .hint{font-size:12px;color:var(--ink-dim);margin-top:6px}
+  .hint a{color:var(--accent-2)}
+
+  /* ---------- PROVIDER ---------- */
+  .provider{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:14px}
+  .prov{padding:10px;border:1px solid var(--line);border-radius:10px;background:var(--bg-elev);color:var(--ink-mute);font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-align:center;cursor:pointer;transition:all .15s}
+  .prov.active{border-color:var(--accent);color:var(--ink);background:rgba(124,247,210,.06)}
+  .prov small{display:block;color:var(--ink-dim);font-size:9px;letter-spacing:.12em;margin-top:3px}
+
+  /* ---------- ACTION ---------- */
+  .actions{display:flex;align-items:center;gap:10px;margin-top:8px}
+  .btn{padding:11px 18px;border-radius:10px;border:1px solid var(--accent);background:var(--accent);color:#001215;font-family:var(--mono);font-size:12px;letter-spacing:.14em;cursor:pointer;font-weight:700;transition:transform .06s, box-shadow .15s}
+  .btn:hover{box-shadow:0 0 0 4px rgba(124,247,210,.15)}
+  .btn:active{transform:translateY(1px)}
+  .btn.ghost{background:transparent;color:var(--ink);border-color:var(--line-strong)}
+  .btn.ghost:hover{box-shadow:0 0 0 4px rgba(255,255,255,.05)}
+  .status{font-family:var(--mono);font-size:11px;letter-spacing:.14em;color:var(--ink-dim)}
+  .status.err{color:var(--bad)}
+  .status.ok{color:var(--good)}
+
+  /* ---------- OUTPUT ---------- */
+  .out-h{display:flex;align-items:baseline;justify-content:space-between;margin-bottom:14px}
+  .out-h h2{font-family:var(--mono);font-size:11px;letter-spacing:.22em;color:var(--ink-mute);margin:0}
+  .empty{color:var(--ink-dim);font-size:13px;font-family:var(--mono);padding:8px 0 16px;line-height:1.7}
+
+  .section{margin:18px 0 6px;padding-top:14px;border-top:1px dashed var(--line)}
+  .section:first-of-type{border-top:0;padding-top:0;margin-top:0}
+  .section-h{font-family:var(--mono);font-size:10.5px;letter-spacing:.22em;color:var(--ink-mute);margin:0 0 12px}
+
+  .top3{list-style:none;padding:0;margin:0;display:grid;gap:10px}
+  .top3 li{display:flex;gap:12px;background:var(--bg-elev);border:1px solid var(--line);border-radius:10px;padding:12px 14px}
+  .top3 .n{font-family:var(--mono);font-weight:700;color:var(--accent);min-width:18px}
+  .top3 .t{font-weight:600;color:var(--ink)}
+  .top3 .s{display:block;color:var(--ink-mute);font-size:13px;margin-top:3px}
+
+  .chips{display:flex;flex-wrap:wrap;gap:8px}
+  .chip{padding:8px 12px;border-radius:999px;background:rgba(255,184,107,.08);border:1px solid rgba(255,184,107,.25);color:var(--warn);font-size:13px}
+  .chip.bad{background:rgba(255,122,138,.08);border-color:rgba(255,122,138,.28);color:var(--bad)}
+
+  .decisions{display:grid;gap:8px}
+  .dec{display:flex;align-items:center;justify-content:space-between;gap:10px;background:var(--bg-elev);border:1px solid var(--line);border-radius:10px;padding:10px 14px}
+  .dec .q{color:var(--ink);font-weight:500}
+  .dec .meta{font-family:var(--mono);font-size:10.5px;letter-spacing:.14em;color:var(--ink-mute)}
+  .dec .age{color:var(--warn);margin-left:8px}
+
+  .score{display:flex;align-items:center;gap:18px;background:var(--bg-elev);border:1px solid var(--line);border-radius:12px;padding:18px}
+  .score .num{font-family:var(--mono);font-size:48px;line-height:1;color:var(--accent);font-weight:700}
+  .score .lbl{font-family:var(--mono);font-size:10px;letter-spacing:.18em;color:var(--ink-mute);margin-bottom:6px}
+  .score .trend{font-weight:600;color:var(--good)}
+  .score .desc{color:var(--ink-mute);font-size:13px;margin-top:4px}
+
+  /* ---------- FOOTER ---------- */
+  footer{margin-top:60px;padding-top:24px;border-top:1px solid var(--line);font-family:var(--mono);font-size:11px;letter-spacing:.14em;color:var(--ink-dim);display:flex;flex-wrap:wrap;gap:12px;justify-content:space-between}
+  footer a{color:var(--ink-mute)}
+</style>
+</head>
+<body>
+<div class="shell">
+
+  <!-- HEADER -->
+  <header class="topbar">
+    <div class="brand">
+      <div class="brand-mark">EM</div>
+      <div>
+        <div class="brand-name"><b>EM&nbsp;COCKPIT</b>&nbsp;&nbsp;v1.0</div>
+        <div class="brand-name" style="margin-top:4px">MORNING BRIEFING &middot; ENGINEERING MANAGERS</div>
+      </div>
+    </div>
+    <div class="tags">
+      <span class="tag ai">★ AI POWERED</span>
+      <span class="tag">BYOK · NO DATA STORED</span>
+    </div>
+  </header>
+
+  <!-- HERO -->
+  <section class="hero">
+    <div class="kicker">RUN YOUR ENGINEERING WEEK IN 60 SECONDS</div>
+    <h1>Paste your team state. <span class="hl">Ship your morning.</span></h1>
+    <p class="lead">A briefing tool for Engineering Managers. Paste what's in flight — sprints, on-call, open PRs, 1:1 follow-ups, decisions waiting — and get a <b>prioritized focus list, risks to watch,</b> and a team-health score, before standup.</p>
+  </section>
+
+  <!-- GRID -->
+  <div class="grid">
+
+    <!-- INPUT CARD -->
+    <section class="card">
+      <div class="card-h">
+        <span class="card-title">INPUT</span>
+        <span class="pill">BYOK · CLIENT-SIDE</span>
+      </div>
+
+      <!-- Tabs -->
+      <div class="tabs" role="tablist">
+        <button class="tab active" data-tab="form" role="tab">Form</button>
+        <button class="tab" data-tab="paste" role="tab">Paste</button>
+        <button class="tab" data-tab="connectors" role="tab" disabled title="Coming soon">Connectors</button>
+      </div>
+
+      <!-- Form pane -->
+      <div class="pane active" data-pane="form">
+        <div class="row">
+          <div>
+            <label for="reports">Direct reports / squad size</label>
+            <input type="text" id="reports" placeholder="6 engineers · 1 SRE · 2 contractors" />
+          </div>
+          <div>
+            <label for="meetings">Meetings today</label>
+            <input type="text" id="meetings" placeholder="3 (1:1 with Priya, arch review, exec sync)" />
+          </div>
+        </div>
+        <div class="row">
+          <div>
+            <label for="prs">Open PRs / review backlog</label>
+            <input type="text" id="prs" placeholder="14 open, 4 stale &gt;3d, 1 from new hire" />
+          </div>
+          <div>
+            <label for="oncall">On-call / incidents this week</label>
+            <input type="text" id="oncall" placeholder="P2 latency Wed · 2 pages overnight · Jamal on rotation" />
+          </div>
+        </div>
+        <div>
+          <label for="notes">Anything else (1:1 follow-ups, decisions waiting, growth threads)</label>
+          <textarea id="notes" placeholder="Priya wants to talk about promo packet. Maya blocked on auth-redesign scope. Need to decide on observability vendor (NewRelic vs Datadog) by Friday. Sprint 22 carryover risk: schema migration."></textarea>
+        </div>
+      </div>
+
+      <!-- Paste pane -->
+      <div class="pane" data-pane="paste">
+        <div>
+          <label for="paste">Paste raw notes, standup messages, or last week's retro</label>
+          <textarea id="paste" style="min-height:220px" placeholder="Paste anything — standup chatter, retro notes, sprint board export, Slack threads. The model will extract people actions, risks, and pending decisions."></textarea>
+        </div>
+      </div>
+
+      <!-- Connectors (disabled) -->
+      <div class="pane" data-pane="connectors">
+        <p class="hint">Real integrations (Linear, Jira, Slack, GitHub) coming in v2. For now: Form or Paste.</p>
+      </div>
+
+      <!-- Provider -->
+      <div style="margin-top:18px">
+        <label>AI Provider</label>
+        <div class="provider" id="provider">
+          <div class="prov active" data-prov="groq">GROQ<small>FREE TIER</small></div>
+          <div class="prov" data-prov="openai">OPENAI<small>GPT-4o-mini</small></div>
+          <div class="prov" data-prov="anthropic">CLAUDE<small>HAIKU 4.5</small></div>
+        </div>
+      </div>
+
+      <!-- API key -->
+      <div style="margin-top:6px">
+        <label for="apikey">API key <span style="text-transform:none;color:var(--ink-dim)">(skip to run demo mode)</span></label>
+        <input type="password" id="apikey" placeholder="sk-... · gsk_... · sk-ant-..." autocomplete="off" />
+        <div class="hint">Key is used in-browser only — never sent to any server we control.
+          Get keys: <a href="https://console.groq.com/keys" target="_blank" rel="noopener">Groq</a> ·
+          <a href="https://platform.openai.com/api-keys" target="_blank" rel="noopener">OpenAI</a> ·
+          <a href="https://console.anthropic.com/settings/keys" target="_blank" rel="noopener">Anthropic</a>
+        </div>
+      </div>
+
+      <!-- Action -->
+      <div class="actions">
+        <button class="btn" id="run">→ Generate Briefing</button>
+        <button class="btn ghost" id="demo">Try Demo</button>
+        <span class="status" id="status"></span>
+      </div>
+    </section>
+
+    <!-- OUTPUT CARD -->
+    <section class="card" id="output">
+      <div class="card-h">
+        <span class="card-title">BRIEFING OUTPUT</span>
+        <span class="pill" id="provider-pill">—</span>
+      </div>
+      <div class="empty" id="empty">
+        Output will appear here after you generate a briefing.<br/>
+        Tip: hit <b style="color:var(--ink)">Try Demo</b> to preview the format with no key.
+      </div>
+      <div id="result" hidden>
+        <!-- Top 3 -->
+        <div class="section">
+          <h3 class="section-h">TODAY'S TOP 3</h3>
+          <ol class="top3" id="top3"></ol>
+        </div>
+        <!-- Risks -->
+        <div class="section">
+          <h3 class="section-h">RISKS TO WATCH</h3>
+          <div class="chips" id="risks"></div>
+        </div>
+        <!-- Decisions -->
+        <div class="section">
+          <h3 class="section-h">DECISIONS WAITING ON YOU</h3>
+          <div class="decisions" id="decisions"></div>
+        </div>
+        <!-- Score -->
+        <div class="section">
+          <h3 class="section-h">TEAM HEALTH</h3>
+          <div class="score">
+            <div class="num" id="score-num">—</div>
+            <div>
+              <div class="lbl">HEALTH INDEX</div>
+              <div class="trend" id="score-trend">—</div>
+              <div class="desc" id="score-desc">—</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <footer>
+    <span>EM COCKPIT v1.0 · ONE BRAIN, FOUR SURFACES</span>
+    <span>BYOK · CLIENT-SIDE · OPEN SOURCE</span>
+  </footer>
+</div>
+
+<script>
+/* ============ STATE ============ */
+const state = {
+  tab: 'form',
+  provider: 'groq',
+};
+
+/* ============ TABS ============ */
+document.querySelectorAll('.tab').forEach(t => {
+  t.addEventListener('click', () => {
+    if (t.disabled) return;
+    document.querySelectorAll('.tab').forEach(x => x.classList.remove('active'));
+    document.querySelectorAll('.pane').forEach(x => x.classList.remove('active'));
+    t.classList.add('active');
+    document.querySelector(`.pane[data-pane="${t.dataset.tab}"]`).classList.add('active');
+    state.tab = t.dataset.tab;
+  });
+});
+
+/* ============ PROVIDER ============ */
+document.querySelectorAll('.prov').forEach(p => {
+  p.addEventListener('click', () => {
+    document.querySelectorAll('.prov').forEach(x => x.classList.remove('active'));
+    p.classList.add('active');
+    state.provider = p.dataset.prov;
+    document.getElementById('provider-pill').textContent = state.provider.toUpperCase();
+  });
+});
+
+/* ============ PROMPT ============ */
+function buildPrompt(input) {
+  return `You are a senior Engineering Manager's chief-of-staff. The user is an EM running a software team. Given their pasted state, produce a tight morning briefing.
+
+Return STRICT JSON with this exact shape:
+{
+  "top3": [
+    {"title": "Short action verb-phrase", "subtitle": "1 sentence why / when / who"},
+    {"title": "...", "subtitle": "..."},
+    {"title": "...", "subtitle": "..."}
+  ],
+  "risks": ["Short phrase (<=14 words)", "...", "..."],
+  "decisions": [
+    {"q": "Question phrased as a decision", "owner": "@person or team", "age": "Xd"},
+    {"q": "...", "owner": "...", "age": "..."}
+  ],
+  "score": {"num": 0-100, "trend": "STRONG ↑ | STEADY → | SHAKY ↓", "desc": "1-line rationale referencing specifics from input"}
+}
+
+Rules:
+- top3 are PEOPLE/SHIPPING actions only — not info to read. Lead with a verb.
+- risks are concrete, not generic ("Migration slipping into next sprint" not "Risk of delays").
+- decisions are questions the EM personally must call.
+- score reflects velocity, on-call load, PR backlog, and morale signals. Be honest, not optimistic.
+- Use the input verbatim where useful (names, dates, owners).
+- Output ONLY the JSON object. No prose, no markdown fence.
+
+USER INPUT
+==========
+${input}`;
+}
+
+/* ============ INPUT COLLECTION ============ */
+function collectInput() {
+  if (state.tab === 'paste') {
+    return document.getElementById('paste').value.trim();
+  }
+  const f = id => document.getElementById(id).value.trim();
+  const parts = [];
+  if (f('reports'))  parts.push(`Reports: ${f('reports')}`);
+  if (f('meetings')) parts.push(`Meetings today: ${f('meetings')}`);
+  if (f('prs'))      parts.push(`Open PRs: ${f('prs')}`);
+  if (f('oncall'))   parts.push(`On-call / incidents: ${f('oncall')}`);
+  if (f('notes'))    parts.push(`Notes:\n${f('notes')}`);
+  return parts.join('\n');
+}
+
+/* ============ PROVIDER ADAPTERS ============ */
+async function callGroq(key, prompt) {
+  const r = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+    method:'POST',
+    headers:{'Content-Type':'application/json','Authorization':`Bearer ${key}`},
+    body: JSON.stringify({
+      model: 'llama-3.3-70b-versatile',
+      response_format: { type:'json_object' },
+      messages: [{ role:'user', content: prompt }],
+      temperature: 0.3,
+    })
+  });
+  if (!r.ok) throw new Error(`Groq ${r.status}: ${await r.text()}`);
+  const j = await r.json();
+  return j.choices[0].message.content;
+}
+
+async function callOpenAI(key, prompt) {
+  const r = await fetch('https://api.openai.com/v1/chat/completions', {
+    method:'POST',
+    headers:{'Content-Type':'application/json','Authorization':`Bearer ${key}`},
+    body: JSON.stringify({
+      model: 'gpt-4o-mini',
+      response_format: { type:'json_object' },
+      messages: [{ role:'user', content: prompt }],
+      temperature: 0.3,
+    })
+  });
+  if (!r.ok) throw new Error(`OpenAI ${r.status}: ${await r.text()}`);
+  const j = await r.json();
+  return j.choices[0].message.content;
+}
+
+async function callAnthropic(key, prompt) {
+  const r = await fetch('https://api.anthropic.com/v1/messages', {
+    method:'POST',
+    headers:{
+      'Content-Type':'application/json',
+      'x-api-key': key,
+      'anthropic-version':'2023-06-01',
+      'anthropic-dangerous-direct-browser-access':'true'
+    },
+    body: JSON.stringify({
+      model: 'claude-haiku-4-5-20251001',
+      max_tokens: 1200,
+      messages: [{ role:'user', content: prompt + '\n\nReply with the JSON object only.' }]
+    })
+  });
+  if (!r.ok) throw new Error(`Anthropic ${r.status}: ${await r.text()}`);
+  const j = await r.json();
+  const txt = j.content?.[0]?.text || '';
+  // Strip any code fences just in case
+  return txt.replace(/^```json\s*/i, '').replace(/```$/,'').trim();
+}
+
+const dispatcher = { groq: callGroq, openai: callOpenAI, anthropic: callAnthropic };
+
+/* ============ DEMO DATA ============ */
+const demo = {
+  top3: [
+    { title: "Unblock Maya on auth-redesign scope", subtitle: "30-min sync before 11am · scope-creep risk to Sprint 22" },
+    { title: "Greenlight observability vendor (NewRelic vs Datadog)", subtitle: "Decision deadline Friday · @infra-team blocked 2 days" },
+    { title: "1:1 with Priya — promo packet review", subtitle: "She asked. Bring last quarter's impact doc. 15 min minimum." }
+  ],
+  risks: [
+    "Schema migration slipping into Sprint 23",
+    "On-call burnout — Jamal's 4th week in a row",
+    "PR review SLA breached: 4 PRs stale &gt;3 days",
+    "New-hire ramp signal — first PR still open day 9"
+  ],
+  decisions: [
+    { q: "Approve auth-redesign scope cut?", owner: "@maya", age: "4d" },
+    { q: "Pick observability vendor (NewRelic vs Datadog)?", owner: "@infra-team", age: "2d" },
+    { q: "Sign off on Q3 headcount plan?", owner: "@hiring", age: "6d" }
+  ],
+  score: { num: 74, trend: "STEADY →", desc: "Velocity flat. On-call load elevated. PR backlog the leading indicator to watch." }
+};
+
+/* ============ RENDER ============ */
+function render(data) {
+  document.getElementById('empty').hidden = true;
+  document.getElementById('result').hidden = false;
+
+  const top3 = document.getElementById('top3');
+  top3.innerHTML = (data.top3 || []).map((x,i) => `
+    <li><span class="n">${i+1}</span><div><div class="t">${esc(x.title)}</div><span class="s">${esc(x.subtitle || '')}</span></div></li>
+  `).join('');
+
+  const risks = document.getElementById('risks');
+  risks.innerHTML = (data.risks || []).map((r,i) => `<span class="chip${i%4===0?' bad':''}">⚠ ${esc(r)}</span>`).join('');
+
+  const dec = document.getElementById('decisions');
+  dec.innerHTML = (data.decisions || []).map(d => `
+    <div class="dec">
+      <span class="q">${esc(d.q)}</span>
+      <span class="meta">blocking ${esc(d.owner || '—')}<span class="age">${esc(d.age || '')} OLD</span></span>
+    </div>
+  `).join('');
+
+  document.getElementById('score-num').textContent   = data.score?.num ?? '—';
+  document.getElementById('score-trend').textContent = data.score?.trend ?? '—';
+  document.getElementById('score-desc').textContent  = data.score?.desc ?? '—';
+}
+
+function esc(s) {
+  return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+
+/* ============ ACTIONS ============ */
+const statusEl = document.getElementById('status');
+function setStatus(msg, kind='') { statusEl.textContent = msg; statusEl.className = 'status ' + kind; }
+
+document.getElementById('demo').addEventListener('click', () => {
+  document.getElementById('provider-pill').textContent = 'DEMO';
+  setStatus('demo data loaded', 'ok');
+  render(demo);
+});
+
+document.getElementById('run').addEventListener('click', async () => {
+  const key = document.getElementById('apikey').value.trim();
+  const input = collectInput();
+
+  if (!input) { setStatus('add some input above', 'err'); return; }
+  if (!key)   { setStatus('no key — showing demo', 'ok'); render(demo); document.getElementById('provider-pill').textContent='DEMO'; return; }
+
+  setStatus('thinking…');
+  document.getElementById('provider-pill').textContent = state.provider.toUpperCase();
+
+  try {
+    const raw = await dispatcher[state.provider](key, buildPrompt(input));
+    const data = JSON.parse(raw);
+    render(data);
+    setStatus('done · ' + new Date().toLocaleTimeString(), 'ok');
+  } catch (err) {
+    console.error(err);
+    setStatus(String(err.message || err).slice(0,120), 'err');
+  }
+});
+</script>
+</body>
+</html>
