@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630" width="1200" height="630">
+  <defs>
+    <linearGradient id="brandG" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#7cf7d2"/>
+      <stop offset="100%" stop-color="#9d8cff"/>
+    </linearGradient>
+    <linearGradient id="bgG" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#06080d"/>
+      <stop offset="100%" stop-color="#0c1018"/>
+    </linearGradient>
+  </defs>
+
+  <rect width="1200" height="630" fill="url(#bgG)"/>
+
+  <!-- brand bar -->
+  <g transform="translate(72, 70)">
+    <rect width="52" height="52" rx="12" fill="url(#brandG)"/>
+    <text x="26" y="35" font-family="Arial, sans-serif" font-weight="800" font-size="20" text-anchor="middle" fill="#001a17">EM</text>
+    <text x="72" y="22" font-family="JetBrains Mono, Consolas, monospace" font-size="14" letter-spacing="3" fill="#8a95aa">EM COCKPIT</text>
+    <text x="72" y="44" font-family="JetBrains Mono, Consolas, monospace" font-size="11" letter-spacing="2" fill="#5a6478">MORNING BRIEFING · ENGINEERING MANAGERS</text>
+  </g>
+
+  <text x="1128" y="98" font-family="JetBrains Mono, Consolas, monospace" font-size="13" letter-spacing="3" text-anchor="end" fill="#7cf7d2">★ AI · BYOK · MIT</text>
+
+  <!-- headline -->
+  <text x="72" y="244" font-family="Inter, system-ui, sans-serif" font-weight="700" font-size="62" fill="#e9eef7">Paste your team state.</text>
+  <text x="72" y="316" font-family="Inter, system-ui, sans-serif" font-weight="700" font-size="62" fill="#7cf7d2">Ship your morning.</text>
+
+  <text x="72" y="372" font-family="Inter, system-ui, sans-serif" font-size="22" fill="#8a95aa">A 60-second briefing for Engineering Managers.</text>
+  <text x="72" y="402" font-family="Inter, system-ui, sans-serif" font-size="22" fill="#8a95aa">Today's top 3 · Risks · Decisions waiting · Team health score.</text>
+
+  <!-- mock TOP 3 list -->
+  <g transform="translate(72, 446)">
+    <text x="0" y="0" font-family="JetBrains Mono, Consolas, monospace" font-size="10" letter-spacing="2" fill="#8a95aa">TODAY'S TOP 3</text>
+    <g transform="translate(0, 16)">
+      <rect width="500" height="36" rx="8" fill="#10151f" stroke="#1f2733"/>
+      <text x="16" y="23" font-family="JetBrains Mono, Consolas, monospace" font-weight="700" font-size="14" fill="#7cf7d2">1</text>
+      <text x="40" y="23" font-family="Inter, system-ui, sans-serif" font-size="14" fill="#e9eef7">Unblock Maya on auth-redesign scope</text>
+    </g>
+    <g transform="translate(0, 58)">
+      <rect width="500" height="36" rx="8" fill="#10151f" stroke="#1f2733"/>
+      <text x="16" y="23" font-family="JetBrains Mono, Consolas, monospace" font-weight="700" font-size="14" fill="#7cf7d2">2</text>
+      <text x="40" y="23" font-family="Inter, system-ui, sans-serif" font-size="14" fill="#e9eef7">Greenlight observability vendor</text>
+    </g>
+    <g transform="translate(0, 100)">
+      <rect width="500" height="36" rx="8" fill="#10151f" stroke="#1f2733"/>
+      <text x="16" y="23" font-family="JetBrains Mono, Consolas, monospace" font-weight="700" font-size="14" fill="#7cf7d2">3</text>
+      <text x="40" y="23" font-family="Inter, system-ui, sans-serif" font-size="14" fill="#e9eef7">1:1 with Priya — promo packet review</text>
+    </g>
+  </g>
+
+  <!-- right-side momentum panel -->
+  <g transform="translate(640, 446)">
+    <rect width="488" height="136" rx="10" fill="#10151f" stroke="#1f2733"/>
+    <text x="20" y="28" font-family="JetBrains Mono, Consolas, monospace" font-size="10" letter-spacing="2" fill="#8a95aa">TEAM HEALTH INDEX</text>
+    <text x="20" y="92" font-family="JetBrains Mono, Consolas, monospace" font-weight="700" font-size="56" fill="#7cf7d2">74</text>
+    <text x="130" y="76" font-family="JetBrains Mono, Consolas, monospace" font-weight="600" font-size="16" letter-spacing="2" fill="#8af0a0">STEADY →</text>
+    <text x="130" y="98" font-family="Inter, system-ui, sans-serif" font-size="13" fill="#8a95aa">Velocity flat. On-call load elevated.</text>
+    <text x="130" y="116" font-family="Inter, system-ui, sans-serif" font-size="13" fill="#8a95aa">PR backlog is the leading indicator.</text>
+  </g>
+
+  <!-- footer line -->
+  <line x1="72" y1="600" x2="1128" y2="600" stroke="#1f2733" stroke-width="1"/>
+  <text x="72" y="624" font-family="JetBrains Mono, Consolas, monospace" font-size="12" letter-spacing="2" fill="#5a6478">WEEK 2 / AI AUTOMATION SERIES · SINGLE HTML · BYOK · MIT</text>
+  <text x="1128" y="624" font-family="JetBrains Mono, Consolas, monospace" font-size="12" letter-spacing="2" text-anchor="end" fill="#5a6478">BUILT BY NANDU T</text>
+</svg>

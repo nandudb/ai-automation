@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630" width="1200" height="630">
+  <defs>
+    <linearGradient id="brandG" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#7cf7d2"/>
+      <stop offset="100%" stop-color="#9d8cff"/>
+    </linearGradient>
+    <linearGradient id="bgG" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#06080d"/>
+      <stop offset="100%" stop-color="#0c1018"/>
+    </linearGradient>
+  </defs>
+
+  <rect width="1200" height="630" fill="url(#bgG)"/>
+
+  <!-- brand bar -->
+  <g transform="translate(72, 70)">
+    <rect width="56" height="56" rx="13" fill="url(#brandG)"/>
+    <text x="28" y="38" font-family="Arial, sans-serif" font-weight="800" font-size="22" text-anchor="middle" fill="#001a17">AI</text>
+    <text x="78" y="22" font-family="JetBrains Mono, Consolas, monospace" font-size="14" letter-spacing="3" fill="#8a95aa">AI AUTOMATION PORTFOLIO</text>
+    <text x="78" y="46" font-family="JetBrains Mono, Consolas, monospace" font-size="11" letter-spacing="2" fill="#5a6478">SIX TOOLS · SIX WEEKS · ONE SKELETON</text>
+  </g>
+
+  <text x="1128" y="100" font-family="JetBrains Mono, Consolas, monospace" font-size="13" letter-spacing="3" text-anchor="end" fill="#7cf7d2">★ BUILDING IN PUBLIC</text>
+
+  <!-- headline -->
+  <text x="72" y="234" font-family="Inter, system-ui, sans-serif" font-weight="700" font-size="56" fill="#e9eef7">Single-file AI tools that</text>
+  <text x="72" y="302" font-family="Inter, system-ui, sans-serif" font-weight="700" font-size="56" fill="#7cf7d2">solve one job each.</text>
+
+  <text x="72" y="354" font-family="Inter, system-ui, sans-serif" font-size="20" fill="#8a95aa">Six BYOK AI tools for engineering managers, SREs, and program managers.</text>
+  <text x="72" y="380" font-family="Inter, system-ui, sans-serif" font-size="20" fill="#8a95aa">Same skeleton. Swap the prompt. Ship in a day.</text>
+
+  <!-- project tiles -->
+  <g transform="translate(72, 424)">
+    <!-- Week 1: LIVE -->
+    <g>
+      <rect width="240" height="140" rx="12" fill="#10151f" stroke="rgba(124,247,210,0.3)" stroke-width="1"/>
+      <rect width="240" height="3" rx="1" fill="url(#brandG)"/>
+      <text x="16" y="32" font-family="JetBrains Mono, Consolas, monospace" font-size="9" letter-spacing="2" fill="#8a95aa">WEEK 1</text>
+      <circle cx="212" cy="29" r="3.5" fill="#7cf7d2"/>
+      <text x="222" y="33" font-family="JetBrains Mono, Consolas, monospace" font-size="9" letter-spacing="2" text-anchor="end" fill="#7cf7d2">LIVE</text>
+      <text x="16" y="64" font-family="Inter, system-ui, sans-serif" font-weight="700" font-size="18" fill="#e9eef7">Migration</text>
+      <text x="16" y="86" font-family="Inter, system-ui, sans-serif" font-weight="700" font-size="18" fill="#e9eef7">Readiness Pilot</text>
+      <text x="16" y="118" font-family="Inter, system-ui, sans-serif" font-size="12" fill="#8a95aa">Pre-cutover GO/NO-GO</text>
+      <text x="16" y="134" font-family="Inter, system-ui, sans-serif" font-size="12" fill="#8a95aa">healthcheck.</text>
+    </g>
+
+    <!-- Week 2: LIVE -->
+    <g transform="translate(260, 0)">
+      <rect width="240" height="140" rx="12" fill="#10151f" stroke="rgba(124,247,210,0.3)" stroke-width="1"/>
+      <rect width="240" height="3" rx="1" fill="url(#brandG)"/>
+      <text x="16" y="32" font-family="JetBrains Mono, Consolas, monospace" font-size="9" letter-spacing="2" fill="#8a95aa">WEEK 2</text>
+      <circle cx="212" cy="29" r="3.5" fill="#7cf7d2"/>
+      <text x="222" y="33" font-family="JetBrains Mono, Consolas, monospace" font-size="9" letter-spacing="2" text-anchor="end" fill="#7cf7d2">LIVE</text>
+      <text x="16" y="64" font-family="Inter, system-ui, sans-serif" font-weight="700" font-size="18" fill="#e9eef7">EM Cockpit</text>
+      <text x="16" y="86" font-family="Inter, system-ui, sans-serif" font-weight="700" font-size="18" fill="#e9eef7">&#160;</text>
+      <text x="16" y="118" font-family="Inter, system-ui, sans-serif" font-size="12" fill="#8a95aa">60-second morning briefing</text>
+      <text x="16" y="134" font-family="Inter, system-ui, sans-serif" font-size="12" fill="#8a95aa">for engineering managers.</text>
+    </g>
+
+    <!-- Week 3-6: drafting / planned -->
+    <g transform="translate(520, 0)">
+      <rect width="240" height="140" rx="12" fill="#10151f" stroke="#1f2733"/>
+      <rect width="240" height="3" rx="1" fill="#ffb86b" opacity="0.5"/>
+      <text x="16" y="32" font-family="JetBrains Mono, Consolas, monospace" font-size="9" letter-spacing="2" fill="#8a95aa">WEEK 3</text>
+      <text x="222" y="33" font-family="JetBrains Mono, Consolas, monospace" font-size="9" letter-spacing="2" text-anchor="end" fill="#ffb86b">DRAFTING</text>
+      <text x="16" y="64" font-family="Inter, system-ui, sans-serif" font-weight="700" font-size="18" fill="#8a95aa">PR Triage</text>
+      <text x="16" y="86" font-family="Inter, system-ui, sans-serif" font-weight="700" font-size="18" fill="#8a95aa">Co-pilot</text>
+      <text x="16" y="118" font-family="Inter, system-ui, sans-serif" font-size="12" fill="#5a6478">Prioritized review order</text>
+      <text x="16" y="134" font-family="Inter, system-ui, sans-serif" font-size="12" fill="#5a6478">with risk + impact tags.</text>
+    </g>
+
+    <!-- Future weeks compact -->
+    <g transform="translate(780, 0)">
+      <rect width="280" height="140" rx="12" fill="#10151f" stroke="#1f2733"/>
+      <text x="16" y="32" font-family="JetBrains Mono, Consolas, monospace" font-size="9" letter-spacing="2" fill="#8a95aa">PLANNED</text>
+      <text x="266" y="33" font-family="JetBrains Mono, Consolas, monospace" font-size="9" letter-spacing="2" text-anchor="end" fill="#5a6478">3 MORE</text>
+      <text x="16" y="62" font-family="Inter, system-ui, sans-serif" font-size="13" fill="#8a95aa">· W4 · 1:1 Prep Studio</text>
+      <text x="16" y="84" font-family="Inter, system-ui, sans-serif" font-size="13" fill="#8a95aa">· W5 · Incident Retro Drafter</text>
+      <text x="16" y="106" font-family="Inter, system-ui, sans-serif" font-size="13" fill="#8a95aa">· W6 · Hiring Loop Synth</text>
+      <text x="16" y="130" font-family="JetBrains Mono, Consolas, monospace" font-size="10" letter-spacing="2" fill="#5a6478">SHIPPING WEEKLY · MAY–JUN 2026</text>
+    </g>
+  </g>
+
+  <!-- footer -->
+  <text x="72" y="600" font-family="JetBrains Mono, Consolas, monospace" font-size="11" letter-spacing="2" fill="#5a6478">NANDUDB.GITHUB.IO/AI-AUTOMATION  ·  BUILT BY NANDU T  ·  MIT</text>
+</svg>

@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630" width="1200" height="630">
+  <defs>
+    <linearGradient id="brandG" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#7cf7d2"/>
+      <stop offset="100%" stop-color="#9d8cff"/>
+    </linearGradient>
+    <linearGradient id="bgG" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#06080d"/>
+      <stop offset="100%" stop-color="#0c1018"/>
+    </linearGradient>
+  </defs>
+
+  <!-- background -->
+  <rect width="1200" height="630" fill="url(#bgG)"/>
+
+  <!-- brand bar -->
+  <g transform="translate(72, 70)">
+    <rect width="52" height="52" rx="12" fill="url(#brandG)"/>
+    <text x="26" y="35" font-family="Arial, sans-serif" font-weight="800" font-size="20" text-anchor="middle" fill="#001a17">MR</text>
+    <text x="72" y="22" font-family="JetBrains Mono, Consolas, monospace" font-size="14" letter-spacing="3" fill="#8a95aa">MIGRATION READINESS PILOT</text>
+    <text x="72" y="44" font-family="JetBrains Mono, Consolas, monospace" font-size="11" letter-spacing="2" fill="#5a6478">PRE-CUTOVER HEALTHCHECK · ANY CLOUD</text>
+  </g>
+
+  <!-- AI tag -->
+  <text x="1128" y="98" font-family="JetBrains Mono, Consolas, monospace" font-size="13" letter-spacing="3" text-anchor="end" fill="#7cf7d2">★ AI · BYOK · MIT</text>
+
+  <!-- headline -->
+  <text x="72" y="234" font-family="Inter, system-ui, sans-serif" font-weight="700" font-size="58" fill="#e9eef7">From "we should be ready"</text>
+  <text x="72" y="304" font-family="Inter, system-ui, sans-serif" font-weight="700" font-size="58" fill="#7cf7d2">to GO / NO-GO in one paste.</text>
+
+  <!-- subhead -->
+  <text x="72" y="372" font-family="Inter, system-ui, sans-serif" font-size="22" fill="#8a95aa">A 60-second AI healthcheck for cloud migrations.</text>
+  <text x="72" y="402" font-family="Inter, system-ui, sans-serif" font-size="22" fill="#8a95aa">Verdict · Blockers · 8-dimension scorecard · Pre-cutover checklist.</text>
+
+  <!-- mock verdict block -->
+  <g transform="translate(72, 444)">
+    <rect width="540" height="120" rx="14" fill="#10151f" stroke="#1f2733" stroke-width="1"/>
+    <rect width="6" height="120" rx="2" fill="#ffb86b"/>
+    <text x="28" y="38" font-family="Inter, system-ui, sans-serif" font-size="12" letter-spacing="3" fill="#8a95aa">CUTOVER DECISION</text>
+    <text x="28" y="80" font-family="Inter, system-ui, sans-serif" font-weight="700" font-size="36" fill="#ffb86b">CONDITIONAL GO · 72%</text>
+    <text x="28" y="104" font-family="Inter, system-ui, sans-serif" font-size="13" fill="#8a95aa">Two P0 blockers — remediable in 11 days before cutover.</text>
+  </g>
+
+  <!-- feature column -->
+  <g transform="translate(652, 460)">
+    <text x="0" y="0" font-family="JetBrains Mono, Consolas, monospace" font-size="11" letter-spacing="3" fill="#7cf7d2">★ OUTPUT</text>
+    <text x="0" y="28" font-family="Inter, system-ui, sans-serif" font-size="15" fill="#e9eef7">→ GO / CONDITIONAL / NO-GO verdict</text>
+    <text x="0" y="52" font-family="Inter, system-ui, sans-serif" font-size="15" fill="#e9eef7">→ P0 / P1 / P2 blocker triage</text>
+    <text x="0" y="76" font-family="Inter, system-ui, sans-serif" font-size="15" fill="#e9eef7">→ 8-dimension scorecard</text>
+    <text x="0" y="100" font-family="Inter, system-ui, sans-serif" font-size="15" fill="#e9eef7">→ T-minus pre-cutover checklist</text>
+  </g>
+
+  <!-- footer line -->
+  <line x1="72" y1="566" x2="1128" y2="566" stroke="#1f2733" stroke-width="1"/>
+  <text x="72" y="596" font-family="JetBrains Mono, Consolas, monospace" font-size="12" letter-spacing="2" fill="#5a6478">SINGLE HTML · BYOK · GROQ · OPENAI · CLAUDE · OPEN SOURCE · MIT</text>
+  <text x="1128" y="596" font-family="JetBrains Mono, Consolas, monospace" font-size="12" letter-spacing="2" text-anchor="end" fill="#5a6478">BUILT BY NANDU T</text>
+</svg>

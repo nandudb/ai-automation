@@ -5,6 +5,21 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <meta name="description" content="Run a cloud-migration readiness check in 60 seconds. Paste your source + target platform state and get a GO/NO-GO verdict, blockers, an 8-dimension scorecard, and a pre-cutover checklist." />
 <title>Migration Readiness Pilot — Run your readiness check in 60 seconds</title>
+
+<!-- Open Graph / Twitter share preview -->
+<meta property="og:title" content="Migration Readiness Pilot — GO / NO-GO in 60 seconds" />
+<meta property="og:description" content="Paste your source + target state. Get a verdict, P0/P1/P2 blockers, an 8-dimension scorecard, and a T-minus checklist. Single HTML, BYOK, open source." />
+<meta property="og:image" content="https://nandudb.github.io/ai-automation/readiness-pilot/og.png" />
+<meta property="og:url" content="https://nandudb.github.io/ai-automation/readiness-pilot/" />
+<meta property="og:type" content="website" />
+<meta property="og:site_name" content="AI Automation Portfolio" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="Migration Readiness Pilot — GO / NO-GO in 60 seconds" />
+<meta name="twitter:description" content="Paste your source + target state. Get a verdict, blockers, an 8-dimension scorecard, and a T-minus checklist. BYOK, open source." />
+<meta name="twitter:image" content="https://nandudb.github.io/ai-automation/readiness-pilot/og.png" />
+
+<!-- Favicon (inline SVG, no extra request) -->
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%2310151f'/%3E%3Ctext x='16' y='22' font-family='Arial' font-weight='700' font-size='15' text-anchor='middle' fill='%237cf7d2'%3EMR%3C/text%3E%3C/svg%3E" />
 <style>
   /* ---------- TOKENS ---------- */
   :root{
@@ -167,8 +182,9 @@
       </div>
     </div>
     <div class="tags">
+      <a href="../" class="tag" style="color:var(--accent);border-color:rgba(124,247,210,.25);background:rgba(124,247,210,.04);text-decoration:none">← PORTFOLIO</a>
       <span class="tag ai">★ AI POWERED</span>
-      <span class="tag">BYOK · NO DATA STORED</span>
+      <span class="tag">BYOK</span>
     </div>
   </header>
 
@@ -268,6 +284,7 @@ Cutover: 2-Aug-2026, 22:00 UTC, 4h window."></textarea>
         <button class="btn" id="run">→ Run Healthcheck</button>
         <button class="btn ghost" id="demo">Try Demo</button>
         <button class="btn ghost" id="export" hidden>Copy as Markdown</button>
+        <button class="btn ghost" id="share" hidden>↗ Share on LinkedIn</button>
         <span class="status" id="status"></span>
       </div>
     </section>
@@ -321,8 +338,11 @@ Cutover: 2-Aug-2026, 22:00 UTC, 4h window."></textarea>
   </div>
 
   <footer>
-    <span>MIGRATION READINESS PILOT v1.0</span>
-    <span>BYOK · CLIENT-SIDE · MIT</span>
+    <span>MIGRATION READINESS PILOT v1.0 · WEEK 1 / AI AUTOMATION SERIES</span>
+    <span>BUILT BY <a href="https://linkedin.com/in/nandat" target="_blank" rel="noopener" style="color:var(--ink-mute);text-decoration:underline">NANDU T</a>
+      &nbsp;·&nbsp;
+      <a href="https://github.com/nandudb/ai-automation" target="_blank" rel="noopener" style="color:var(--ink-mute);text-decoration:underline">SOURCE</a>
+      &nbsp;·&nbsp; BYOK · MIT</span>
   </footer>
 </div>
 
@@ -501,6 +521,7 @@ function render(data) {
   document.getElementById('empty').hidden = true;
   document.getElementById('result').hidden = false;
   document.getElementById('export').hidden = false;
+  document.getElementById('share').hidden = false;
 
   // Verdict
   const v = (data.verdict || '').toUpperCase();
@@ -585,6 +606,12 @@ document.getElementById('export').addEventListener('click', async () => {
   } catch (e) { setStatus('clipboard blocked — select and copy manually', 'err'); }
 });
 
+document.getElementById('share').addEventListener('click', () => {
+  const url = 'https://nandudb.github.io/ai-automation/readiness-pilot/';
+  const shareUrl = 'https://www.linkedin.com/sharing/share-offsite/?url=' + encodeURIComponent(url);
+  window.open(shareUrl, '_blank', 'width=620,height=540');
+});
+
 /* ============ ACTIONS ============ */
 const statusEl = document.getElementById('status');
 function setStatus(msg, kind=''){ statusEl.textContent = msg; statusEl.className = 'status ' + kind; }
@@ -594,6 +621,18 @@ document.getElementById('demo').addEventListener('click', () => {
   setStatus('demo data loaded', 'ok');
   render(demo);
 });
+
+/* ============ AUTO-DEMO ON FIRST PAINT ============ */
+// If a visitor lands and hasn't touched any field, show the demo report so the
+// first thing they see is the verdict banner — not an empty output card.
+setTimeout(() => {
+  const ids = ['source','target','scope','slos','team','risks-known','notes','paste','apikey'];
+  const userTouched = ids.some(id => (document.getElementById(id)?.value || '').length > 0);
+  if (!state.lastReport && !userTouched) {
+    document.getElementById('demo').click();
+    setStatus('demo report loaded — fill the form to run your own', 'ok');
+  }
+}, 1200);
 
 document.getElementById('run').addEventListener('click', async () => {
   const key = document.getElementById('apikey').value.trim();

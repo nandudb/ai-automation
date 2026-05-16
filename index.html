@@ -1,0 +1,300 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta name="description" content="Six single-file AI tools, six weeks, one skeleton. A portfolio of repeatable, BYOK, single-page AI automations for engineering managers, SREs, and program managers." />
+<title>AI Automation — Six tools, six weeks · Nandu T</title>
+
+<!-- Open Graph -->
+<meta property="og:title" content="AI Automation Portfolio — Six tools, six weeks" />
+<meta property="og:description" content="Single-file AI tools for engineers, SREs, and program managers. BYOK. Open source. Forkable in 30 seconds." />
+<meta property="og:image" content="https://nandudb.github.io/ai-automation/og.png" />
+<meta property="og:url" content="https://nandudb.github.io/ai-automation/" />
+<meta property="og:type" content="website" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:image" content="https://nandudb.github.io/ai-automation/og.png" />
+
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%2310151f'/%3E%3Ctext x='16' y='22' font-family='Arial' font-weight='700' font-size='14' text-anchor='middle' fill='%237cf7d2'%3EAI%3C/text%3E%3C/svg%3E" />
+
+<style>
+  :root{
+    --bg:#06080d; --bg-elev:#0c1018; --bg-card:#10151f;
+    --line:#1f2733; --line-strong:#2a3445;
+    --ink:#e9eef7; --ink-mute:#8a95aa; --ink-dim:#5a6478;
+    --accent:#7cf7d2; --accent-2:#9d8cff;
+    --warn:#ffb86b; --bad:#ff7a8a; --good:#8af0a0;
+    --radius:14px;
+    --mono:'JetBrains Mono', ui-monospace, Menlo, Consolas, monospace;
+    --sans:Inter, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0;background:var(--bg);color:var(--ink);font-family:var(--sans);line-height:1.5;-webkit-font-smoothing:antialiased}
+  a{color:var(--accent);text-decoration:none}
+  a:hover{text-decoration:underline}
+  ::selection{background:var(--accent);color:#001215}
+
+  .shell{max-width:1180px;margin:0 auto;padding:28px 24px 80px}
+
+  /* HEADER */
+  .topbar{display:flex;align-items:center;justify-content:space-between;gap:16px;padding-bottom:24px;border-bottom:1px solid var(--line)}
+  .brand{display:flex;align-items:center;gap:12px}
+  .brand-mark{width:40px;height:40px;border-radius:10px;background:linear-gradient(135deg,var(--accent),var(--accent-2));display:grid;place-items:center;font-family:var(--mono);font-weight:800;color:#001a17;font-size:13px}
+  .brand-name{font-family:var(--mono);font-size:12px;letter-spacing:.18em;color:var(--ink-mute)}
+  .brand-name b{color:var(--ink)}
+  .links{display:flex;gap:18px;font-family:var(--mono);font-size:11px;letter-spacing:.14em;color:var(--ink-mute)}
+  .links a{color:var(--ink-mute)}
+  .links a:hover{color:var(--accent)}
+
+  /* HERO */
+  .hero{padding:60px 0 32px}
+  .kicker{font-family:var(--mono);font-size:12px;letter-spacing:.22em;color:var(--ink-mute);margin-bottom:16px}
+  h1{font-size:clamp(36px,5.4vw,64px);line-height:1.04;letter-spacing:-.02em;margin:0 0 18px;font-weight:700}
+  h1 .hl{background:linear-gradient(90deg,var(--accent),var(--accent-2));-webkit-background-clip:text;background-clip:text;color:transparent}
+  .lead{font-size:17px;color:var(--ink-mute);max-width:720px;margin:0}
+  .lead b{color:var(--ink);font-weight:600}
+
+  /* PROGRESS STRIP */
+  .progress{display:flex;gap:8px;margin-top:32px;padding:14px 16px;background:var(--bg-card);border:1px solid var(--line);border-radius:12px;align-items:center;flex-wrap:wrap}
+  .progress .pl{font-family:var(--mono);font-size:11px;letter-spacing:.18em;color:var(--ink-mute);margin-right:12px}
+  .dot{width:34px;height:6px;border-radius:99px;background:var(--bg-elev);position:relative}
+  .dot.done{background:linear-gradient(90deg,var(--accent),var(--accent-2))}
+  .dot.next{background:var(--warn);opacity:.5}
+  .progress .pn{margin-left:auto;font-family:var(--mono);font-size:11px;letter-spacing:.14em;color:var(--ink)}
+
+  /* GRID */
+  .grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;margin-top:36px}
+  @media (max-width:980px){ .grid{grid-template-columns:repeat(2,1fr)} }
+  @media (max-width:640px){ .grid{grid-template-columns:1fr} }
+
+  /* CARD */
+  .card{background:var(--bg-card);border:1px solid var(--line);border-radius:var(--radius);padding:22px;transition:all .15s;display:flex;flex-direction:column;min-height:240px;position:relative;overflow:hidden}
+  .card:hover{border-color:var(--line-strong);transform:translateY(-2px)}
+  .card.live{border-color:rgba(124,247,210,.3)}
+  .card.live:hover{box-shadow:0 0 0 1px var(--accent), 0 14px 40px rgba(0,0,0,.4)}
+  .card.coming{opacity:.65}
+  .card.coming:hover{opacity:.85}
+
+  .card-stripe{position:absolute;top:0;left:0;right:0;height:3px;background:var(--line)}
+  .card.live .card-stripe{background:linear-gradient(90deg,var(--accent),var(--accent-2))}
+  .card.coming .card-stripe{background:var(--warn);opacity:.4}
+
+  .card-h{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
+  .card-week{font-family:var(--mono);font-size:10.5px;letter-spacing:.18em;color:var(--ink-mute)}
+  .card-status{font-family:var(--mono);font-size:9.5px;letter-spacing:.18em;padding:3px 8px;border-radius:99px;border:1px solid var(--line-strong)}
+  .card-status.live{color:var(--accent);border-color:rgba(124,247,210,.4);background:rgba(124,247,210,.06)}
+  .card-status.coming{color:var(--warn);border-color:rgba(255,184,107,.4);background:rgba(255,184,107,.06)}
+
+  .card h3{font-size:22px;line-height:1.2;margin:6px 0 8px;font-weight:700;color:var(--ink)}
+  .card .desc{color:var(--ink-mute);font-size:14px;margin:0 0 16px;flex:1}
+
+  .chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:auto;margin-bottom:14px}
+  .chip{font-family:var(--mono);font-size:9.5px;letter-spacing:.12em;padding:4px 8px;border-radius:6px;background:var(--bg-elev);color:var(--ink-mute);border:1px solid var(--line)}
+
+  .card-cta{display:flex;align-items:center;justify-content:space-between;border-top:1px dashed var(--line);padding-top:14px;margin-top:auto}
+  .card-cta a{font-family:var(--mono);font-size:11px;letter-spacing:.14em;color:var(--accent)}
+  .card-cta a.disabled{color:var(--ink-dim);cursor:not-allowed;pointer-events:none}
+  .card-cta .src{font-family:var(--mono);font-size:10.5px;letter-spacing:.12em;color:var(--ink-mute)}
+  .card-cta .src:hover{color:var(--ink)}
+
+  /* CHANGELOG */
+  .changelog{margin-top:64px;padding-top:36px;border-top:1px solid var(--line)}
+  .changelog h2{font-family:var(--mono);font-size:14px;letter-spacing:.22em;color:var(--ink-mute);margin:0 0 18px}
+  .log{display:grid;gap:10px}
+  .log-row{display:grid;grid-template-columns:120px 1fr;gap:18px;padding:12px 16px;background:var(--bg-card);border:1px solid var(--line);border-radius:10px}
+  .log-row .date{font-family:var(--mono);font-size:11px;letter-spacing:.14em;color:var(--ink-mute);align-self:start;padding-top:1px}
+  .log-row .item b{color:var(--ink)}
+  .log-row .item{color:var(--ink-mute);font-size:14px}
+  .log-row.future{opacity:.55}
+  .log-row.future .date{color:var(--warn)}
+
+  footer{margin-top:64px;padding-top:24px;border-top:1px solid var(--line);font-family:var(--mono);font-size:11px;letter-spacing:.14em;color:var(--ink-dim);display:flex;flex-wrap:wrap;gap:12px;justify-content:space-between}
+  footer a{color:var(--ink-mute)}
+</style>
+</head>
+<body>
+<div class="shell">
+
+  <header class="topbar">
+    <div class="brand">
+      <div class="brand-mark">AI</div>
+      <div>
+        <div class="brand-name"><b>AI&nbsp;AUTOMATION</b>&nbsp;PORTFOLIO</div>
+        <div class="brand-name" style="margin-top:4px">SIX TOOLS · SIX WEEKS · ONE SKELETON</div>
+      </div>
+    </div>
+    <div class="links">
+      <a href="https://github.com/nandudb/ai-automation" target="_blank" rel="noopener">SOURCE</a>
+      <a href="https://linkedin.com/in/nandat" target="_blank" rel="noopener">LINKEDIN</a>
+    </div>
+  </header>
+
+  <!-- HERO -->
+  <section class="hero">
+    <div class="kicker">A SHIPPING SERIES BY NANDU T · MAY–JUN 2026</div>
+    <h1>Single-file AI tools that <span class="hl">solve one job each.</span></h1>
+    <p class="lead">Six BYOK, single-page AI automations for engineering managers, SREs, and program managers. Same skeleton, swap the prompt, ship in a day. <b>Every project is a forkable HTML file</b> — no toolchain rot, no backend, no recurring cost. Built in public, posted weekly.</p>
+
+    <!-- progress dots -->
+    <div class="progress">
+      <span class="pl">PROGRESS</span>
+      <span class="dot done" title="Week 1 · live"></span>
+      <span class="dot done" title="Week 2 · live"></span>
+      <span class="dot next" title="Week 3 · drafting"></span>
+      <span class="dot" title="Week 4"></span>
+      <span class="dot" title="Week 5"></span>
+      <span class="dot" title="Week 6"></span>
+      <span class="pn">2 / 6 SHIPPED</span>
+    </div>
+  </section>
+
+  <!-- PROJECT GRID -->
+  <section class="grid">
+
+    <!-- WEEK 1 — LIVE -->
+    <article class="card live">
+      <span class="card-stripe"></span>
+      <div class="card-h">
+        <span class="card-week">WEEK 1 · PRE-CUTOVER</span>
+        <span class="card-status live">● LIVE</span>
+      </div>
+      <h3>Migration Readiness Pilot</h3>
+      <p class="desc">Paste your source + target state — get a GO/NO-GO verdict, P0/P1/P2 blockers, an 8-dimension scorecard, and a pre-cutover checklist ordered by T-minus days.</p>
+      <div class="chips">
+        <span class="chip">CLOUD MIGRATION</span><span class="chip">SRE</span><span class="chip">JSON SCHEMA</span>
+      </div>
+      <div class="card-cta">
+        <a href="readiness-pilot/">Open tool →</a>
+        <a class="src" href="https://github.com/nandudb/ai-automation/tree/main/readiness-pilot" target="_blank" rel="noopener">SOURCE ↗</a>
+      </div>
+    </article>
+
+    <!-- WEEK 2 — LIVE -->
+    <article class="card live">
+      <span class="card-stripe"></span>
+      <div class="card-h">
+        <span class="card-week">WEEK 2 · MORNING BRIEFING</span>
+        <span class="card-status live">● LIVE</span>
+      </div>
+      <h3>EM Cockpit</h3>
+      <p class="desc">A 60-second morning briefing for Engineering Managers. Paste team state — get today's top 3 actions, risks to watch, decisions waiting on you, and a team-health score.</p>
+      <div class="chips">
+        <span class="chip">EM</span><span class="chip">TEAM HEALTH</span><span class="chip">DAILY USE</span>
+      </div>
+      <div class="card-cta">
+        <a href="em-cockpit/">Open tool →</a>
+        <a class="src" href="https://github.com/nandudb/ai-automation/tree/main/em-cockpit" target="_blank" rel="noopener">SOURCE ↗</a>
+      </div>
+    </article>
+
+    <!-- WEEK 3 — COMING -->
+    <article class="card coming">
+      <span class="card-stripe"></span>
+      <div class="card-h">
+        <span class="card-week">WEEK 3 · CODE REVIEW</span>
+        <span class="card-status coming">DRAFTING</span>
+      </div>
+      <h3>PR Triage Co-pilot</h3>
+      <p class="desc">Paste your open PR list — get a prioritized review order with risk &amp; impact tags, the first three to tackle, and skip-for-now reasons.</p>
+      <div class="chips">
+        <span class="chip">REVIEW</span><span class="chip">SHIPPING</span><span class="chip">TECH LEAD</span>
+      </div>
+      <div class="card-cta">
+        <a class="disabled">Open tool →</a>
+        <span class="src">SHIPS NEXT WEEK</span>
+      </div>
+    </article>
+
+    <!-- WEEK 4 — COMING -->
+    <article class="card coming">
+      <span class="card-stripe"></span>
+      <div class="card-h">
+        <span class="card-week">WEEK 4 · PEOPLE</span>
+        <span class="card-status coming">PLANNED</span>
+      </div>
+      <h3>1:1 Prep Studio</h3>
+      <p class="desc">Paste recent notes about one report — get a 1:1 agenda with growth threads, blockers to probe, recognition moments, and open commitments to follow up on.</p>
+      <div class="chips">
+        <span class="chip">COACHING</span><span class="chip">GROWTH</span><span class="chip">EM</span>
+      </div>
+      <div class="card-cta">
+        <a class="disabled">Open tool →</a>
+        <span class="src">PLANNED</span>
+      </div>
+    </article>
+
+    <!-- WEEK 5 — COMING -->
+    <article class="card coming">
+      <span class="card-stripe"></span>
+      <div class="card-h">
+        <span class="card-week">WEEK 5 · INCIDENTS</span>
+        <span class="card-status coming">PLANNED</span>
+      </div>
+      <h3>Incident Retro Drafter</h3>
+      <p class="desc">Paste pager log + Slack thread — get a draft RCA with timeline, contributing factors, what-went-well, action items, and an exec-ready summary.</p>
+      <div class="chips">
+        <span class="chip">SRE</span><span class="chip">POSTMORTEM</span><span class="chip">RCA</span>
+      </div>
+      <div class="card-cta">
+        <a class="disabled">Open tool →</a>
+        <span class="src">PLANNED</span>
+      </div>
+    </article>
+
+    <!-- WEEK 6 — COMING -->
+    <article class="card coming">
+      <span class="card-stripe"></span>
+      <div class="card-h">
+        <span class="card-week">WEEK 6 · HIRING</span>
+        <span class="card-status coming">PLANNED</span>
+      </div>
+      <h3>Hiring Loop Synth</h3>
+      <p class="desc">Paste interviewer notes from a full loop — get a hire/no-hire summary, calibration flags across interviewers, dimensions to probe in a follow-up.</p>
+      <div class="chips">
+        <span class="chip">HIRING</span><span class="chip">CALIBRATION</span><span class="chip">EM</span>
+      </div>
+      <div class="card-cta">
+        <a class="disabled">Open tool →</a>
+        <span class="src">PLANNED</span>
+      </div>
+    </article>
+  </section>
+
+  <!-- CHANGELOG -->
+  <section class="changelog">
+    <h2>CHANGELOG · WHAT SHIPPED, WHAT'S NEXT</h2>
+    <div class="log">
+      <div class="log-row">
+        <span class="date">2026-05-16</span>
+        <div class="item"><b>Week 1 launch — Migration Readiness Pilot v1.0.</b> Verdict logic encoded in the prompt. 8-dimension scorecard. P0/P1/P2 blocker model. Copy-as-markdown export. Built in one HTML file, BYOK.</div>
+      </div>
+      <div class="log-row">
+        <span class="date">2026-05-16</span>
+        <div class="item"><b>Week 2 launch — EM Cockpit v1.0.</b> 60-second morning briefing for Engineering Managers. Same skeleton, swapped prompt + four output regions. Total fork time: under one hour.</div>
+      </div>
+      <div class="log-row future">
+        <span class="date">2026-05-23</span>
+        <div class="item"><b>Week 3 · PR Triage Co-pilot — drafting.</b> Open question: should the review order weigh blast radius (size of change) or author tenure (newer authors need more support)? Feedback welcome on LinkedIn.</div>
+      </div>
+      <div class="log-row future">
+        <span class="date">2026-05-30</span>
+        <div class="item"><b>Week 4 · 1:1 Prep Studio — planned.</b> The hardest design question: how do you make recognition specific and non-generic when the model has limited memory? Solving with a "recent specifics" required field.</div>
+      </div>
+      <div class="log-row future">
+        <span class="date">2026-06-06</span>
+        <div class="item"><b>Week 5 · Incident Retro Drafter — planned.</b> Will follow Google SRE blameless-postmortem structure. Open question: how to surface near-misses that didn't page.</div>
+      </div>
+      <div class="log-row future">
+        <span class="date">2026-06-13</span>
+        <div class="item"><b>Week 6 · Hiring Loop Synth — planned.</b> Series finale. Adds a calibration-disagreement detection step across interviewer notes.</div>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    <span>AI AUTOMATION PORTFOLIO · v1.2 · BUILT IN PUBLIC</span>
+    <span>BY <a href="https://linkedin.com/in/nandat" target="_blank" rel="noopener">NANDU T</a> · <a href="https://github.com/nandudb/ai-automation" target="_blank" rel="noopener">SOURCE</a> · MIT</span>
+  </footer>
+</div>
+</body>
+</html>
