@@ -54,5 +54,5 @@
   <!-- footer line -->
   <line x1="72" y1="566" x2="1128" y2="566" stroke="#1f2733" stroke-width="1"/>
   <text x="72" y="596" font-family="JetBrains Mono, Consolas, monospace" font-size="12" letter-spacing="2" fill="#5a6478">SINGLE HTML · BYOK · GROQ · OPENAI · CLAUDE · OPEN SOURCE · MIT</text>
-  <text x="1128" y="596" font-family="JetBrains Mono, Consolas, monospace" font-size="12" letter-spacing="2" text-anchor="end" fill="#5a6478">BUILT BY NANDU T</text>
+  <text x="1128" y="596" font-family="JetBrains Mono, Consolas, monospace" font-size="12" letter-spacing="2" text-anchor="end" fill="#5a6478">BUILT BY NANDA T</text>
 </svg>

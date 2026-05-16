@@ -63,5 +63,5 @@
   <!-- footer line -->
   <line x1="72" y1="600" x2="1128" y2="600" stroke="#1f2733" stroke-width="1"/>
   <text x="72" y="624" font-family="JetBrains Mono, Consolas, monospace" font-size="12" letter-spacing="2" fill="#5a6478">WEEK 2 / AI AUTOMATION SERIES · SINGLE HTML · BYOK · MIT</text>
-  <text x="1128" y="624" font-family="JetBrains Mono, Consolas, monospace" font-size="12" letter-spacing="2" text-anchor="end" fill="#5a6478">BUILT BY NANDU T</text>
+  <text x="1128" y="624" font-family="JetBrains Mono, Consolas, monospace" font-size="12" letter-spacing="2" text-anchor="end" fill="#5a6478">BUILT BY NANDA T</text>
 </svg>
