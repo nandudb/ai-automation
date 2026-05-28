@@ -24,11 +24,11 @@
   <text x="1128" y="98" font-family="JetBrains Mono, Consolas, monospace" font-size="13" letter-spacing="3" text-anchor="end" fill="#7cf7d2">★ AI · BYOK · MIT</text>
 
   <!-- headline -->
-  <text x="72" y="244" font-family="Inter, system-ui, sans-serif" font-weight="700" font-size="62" fill="#e9eef7">Paste your team state.</text>
-  <text x="72" y="316" font-family="Inter, system-ui, sans-serif" font-weight="700" font-size="62" fill="#7cf7d2">Ship your morning.</text>
+  <text x="72" y="234" font-family="Inter, system-ui, sans-serif" font-weight="700" font-size="54" fill="#e9eef7">Today's top 3 priorities.</text>
+  <text x="72" y="298" font-family="Inter, system-ui, sans-serif" font-weight="700" font-size="54" fill="#7cf7d2">In 60 seconds, not 30 minutes.</text>
 
-  <text x="72" y="372" font-family="Inter, system-ui, sans-serif" font-size="22" fill="#8a95aa">A 60-second briefing for Engineering Managers.</text>
-  <text x="72" y="402" font-family="Inter, system-ui, sans-serif" font-size="22" fill="#8a95aa">Today's top 3 · Risks · Decisions waiting · Team health score.</text>
+  <text x="72" y="362" font-family="Inter, system-ui, sans-serif" font-size="22" fill="#8a95aa">A morning briefing for Engineering Managers.</text>
+  <text x="72" y="394" font-family="Inter, system-ui, sans-serif" font-size="22" fill="#8a95aa">Top 3 · Risks · Decisions waiting · Team health score.</text>
 
   <!-- mock TOP 3 list -->
   <g transform="translate(72, 446)">
