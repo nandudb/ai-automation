@@ -1,0 +1,511 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta name="description" content="A 30-second PR review-order optimizer for engineering managers and tech leads. Paste your open-PR backlog and get a ranked review order, the first three to tackle, and skip-for-now reasons." />
+<title>PR Triage Co-pilot — Your PR review order, in 30 seconds</title>
+
+<meta property="og:title" content="PR Triage Co-pilot — Your PR review order, in 30 seconds" />
+<meta property="og:description" content="Paste your open-PR backlog. Get a ranked review order, the first three to review now, skip-for-now reasons, and a backlog summary. Single HTML, BYOK, open source." />
+<meta property="og:image" content="https://nandudb.github.io/ai-automation/pr-triage/og.png" />
+<meta property="og:url" content="https://nandudb.github.io/ai-automation/pr-triage/" />
+<meta property="og:type" content="website" />
+<meta property="og:site_name" content="AI Automation Portfolio" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:image" content="https://nandudb.github.io/ai-automation/pr-triage/og.png" />
+
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%2310151f'/%3E%3Ctext x='16' y='22' font-family='Arial' font-weight='700' font-size='14' text-anchor='middle' fill='%237cf7d2'%3EPT%3C/text%3E%3C/svg%3E" />
+
+<style>
+  :root{
+    --bg:#06080d; --bg-elev:#0c1018; --bg-card:#10151f;
+    --line:#1f2733; --line-strong:#2a3445;
+    --ink:#e9eef7; --ink-mute:#8a95aa; --ink-dim:#5a6478;
+    --accent:#7cf7d2; --accent-2:#9d8cff;
+    --warn:#ffb86b; --bad:#ff7a8a; --good:#8af0a0;
+    --radius:14px;
+    --shadow:0 0 0 1px rgba(255,255,255,.04), 0 20px 60px rgba(0,0,0,.45);
+    --mono:'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    --sans:Inter, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0;background:var(--bg);color:var(--ink);font-family:var(--sans);line-height:1.5;-webkit-font-smoothing:antialiased}
+  a{color:var(--accent);text-decoration:none}
+  a:hover{text-decoration:underline}
+  button{font-family:inherit}
+  ::selection{background:var(--accent);color:#001215}
+  .shell{max-width:1140px;margin:0 auto;padding:28px 24px 80px}
+
+  .topbar{display:flex;align-items:center;justify-content:space-between;gap:16px;padding-bottom:24px;border-bottom:1px solid var(--line)}
+  .brand{display:flex;align-items:center;gap:12px}
+  .brand-mark{width:38px;height:38px;border-radius:10px;background:linear-gradient(135deg,var(--accent),var(--accent-2));display:grid;place-items:center;font-family:var(--mono);font-weight:800;color:#001a17;font-size:14px}
+  .brand-name{font-family:var(--mono);font-size:12px;letter-spacing:.18em;color:var(--ink-mute)}
+  .brand-name b{color:var(--ink)}
+  .tags{display:flex;gap:8px;flex-wrap:wrap}
+  .tag{font-family:var(--mono);font-size:10.5px;letter-spacing:.16em;padding:6px 10px;border-radius:999px;border:1px solid var(--line-strong);color:var(--ink-mute)}
+  .tag.ai{color:var(--accent);border-color:rgba(124,247,210,.25);background:rgba(124,247,210,.06)}
+
+  .hero{padding:54px 0 36px}
+  .kicker{font-family:var(--mono);font-size:12px;letter-spacing:.22em;color:var(--ink-mute);margin-bottom:16px}
+  h1{font-size:clamp(36px,5.4vw,64px);line-height:1.04;letter-spacing:-.02em;margin:0 0 18px;font-weight:700}
+  h1 .hl{background:linear-gradient(90deg,var(--accent),var(--accent-2));-webkit-background-clip:text;background-clip:text;color:transparent}
+  .lead{font-size:17px;color:var(--ink-mute);max-width:700px;margin:0}
+  .lead b{color:var(--ink);font-weight:600}
+
+  .grid{display:grid;grid-template-columns:1fr 1fr;gap:22px;margin-top:40px}
+  @media (max-width:900px){ .grid{grid-template-columns:1fr} }
+
+  .card{background:var(--bg-card);border:1px solid var(--line);border-radius:var(--radius);padding:22px;box-shadow:var(--shadow)}
+  .card-h{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px}
+  .card-title{font-family:var(--mono);font-size:11px;letter-spacing:.22em;color:var(--ink-mute)}
+  .pill{font-family:var(--mono);font-size:10px;letter-spacing:.14em;padding:4px 8px;border-radius:6px;background:var(--bg-elev);color:var(--ink-mute);border:1px solid var(--line)}
+
+  .tabs{display:flex;gap:6px;margin-bottom:16px;border-bottom:1px solid var(--line);padding-bottom:0}
+  .tab{padding:10px 14px;border:none;background:transparent;color:var(--ink-mute);font-family:var(--mono);font-size:11px;letter-spacing:.16em;cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-1px}
+  .tab.active{color:var(--ink);border-bottom-color:var(--accent)}
+  .tab[disabled]{opacity:.4;cursor:not-allowed}
+  .pane{display:none}
+  .pane.active{display:block}
+
+  .row{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px}
+  @media (max-width:560px){ .row{grid-template-columns:1fr} }
+  label{display:block;font-family:var(--mono);font-size:10.5px;letter-spacing:.14em;color:var(--ink-mute);margin-bottom:6px;text-transform:uppercase}
+  textarea, input[type="text"], input[type="password"], select{
+    width:100%;background:var(--bg-elev);color:var(--ink);border:1px solid var(--line);border-radius:8px;padding:10px 12px;font-family:var(--sans);font-size:14px;outline:none;transition:border-color .15s
+  }
+  textarea{min-height:88px;resize:vertical;font-family:var(--mono);font-size:13px;line-height:1.5}
+  textarea:focus, input:focus, select:focus{border-color:var(--accent)}
+  .hint{font-size:12px;color:var(--ink-dim);margin-top:6px}
+  .hint a{color:var(--accent-2)}
+
+  .provider{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:14px}
+  .prov{padding:10px;border:1px solid var(--line);border-radius:10px;background:var(--bg-elev);color:var(--ink-mute);font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-align:center;cursor:pointer;transition:all .15s}
+  .prov.active{border-color:var(--accent);color:var(--ink);background:rgba(124,247,210,.06)}
+  .prov small{display:block;color:var(--ink-dim);font-size:9px;letter-spacing:.12em;margin-top:3px}
+
+  .actions{display:flex;align-items:center;gap:10px;margin-top:8px;flex-wrap:wrap}
+  .btn{padding:11px 18px;border-radius:10px;border:1px solid var(--accent);background:var(--accent);color:#001215;font-family:var(--mono);font-size:12px;letter-spacing:.14em;cursor:pointer;font-weight:700;transition:transform .06s, box-shadow .15s}
+  .btn:hover{box-shadow:0 0 0 4px rgba(124,247,210,.15)}
+  .btn:active{transform:translateY(1px)}
+  .btn.ghost{background:transparent;color:var(--ink);border-color:var(--line-strong)}
+  .btn.ghost:hover{box-shadow:0 0 0 4px rgba(255,255,255,.05)}
+  .status{font-family:var(--mono);font-size:11px;letter-spacing:.14em;color:var(--ink-dim)}
+  .status.err{color:var(--bad)}
+  .status.ok{color:var(--good)}
+
+  .empty{color:var(--ink-dim);font-size:13px;font-family:var(--mono);padding:8px 0 16px;line-height:1.7}
+  .section{margin:18px 0 6px;padding-top:14px;border-top:1px dashed var(--line)}
+  .section:first-of-type{border-top:0;padding-top:0;margin-top:0}
+  .section-h{font-family:var(--mono);font-size:10.5px;letter-spacing:.22em;color:var(--ink-mute);margin:0 0 12px}
+
+  /* Summary banner */
+  .summary{background:var(--bg-elev);border:1px solid var(--line);border-radius:10px;padding:14px 16px;color:var(--ink-mute);font-size:14px;line-height:1.5}
+  .summary b{color:var(--ink);font-weight:600}
+
+  /* First three (highlighted) */
+  .first-three{display:grid;gap:10px;margin-bottom:6px}
+  .ft{display:grid;grid-template-columns:auto 1fr;gap:12px;background:rgba(124,247,210,.06);border:1px solid rgba(124,247,210,.25);border-radius:10px;padding:12px 14px;align-items:start}
+  .ft .n{font-family:var(--mono);font-weight:700;color:var(--accent);font-size:18px;line-height:1;padding-top:3px;min-width:22px}
+  .ft .body{color:var(--ink);font-weight:600}
+  .ft .meta{font-family:var(--mono);font-size:10.5px;letter-spacing:.12em;color:var(--ink-mute);margin-top:4px}
+
+  /* Review order list */
+  .order-list{display:grid;gap:8px}
+  .pr{display:grid;grid-template-columns:auto 1fr auto;gap:12px;background:var(--bg-elev);border:1px solid var(--line);border-radius:10px;padding:11px 14px;align-items:center}
+  .pr .rank{font-family:var(--mono);font-size:12px;color:var(--ink-mute);min-width:24px}
+  .pr .title{color:var(--ink);font-weight:500;font-size:14px}
+  .pr .reason{display:block;color:var(--ink-mute);font-size:12px;margin-top:3px}
+  .size{font-family:var(--mono);font-size:10px;font-weight:700;letter-spacing:.14em;padding:4px 7px;border-radius:6px;height:fit-content}
+  .size.S{background:rgba(138,240,160,.1);color:var(--good);border:1px solid rgba(138,240,160,.25)}
+  .size.M{background:rgba(124,247,210,.1);color:var(--accent);border:1px solid rgba(124,247,210,.25)}
+  .size.L{background:rgba(255,184,107,.1);color:var(--warn);border:1px solid rgba(255,184,107,.3)}
+  .size.XL{background:rgba(255,122,138,.12);color:var(--bad);border:1px solid rgba(255,122,138,.3)}
+
+  /* Skip list */
+  .skip-list{display:grid;gap:8px}
+  .skip{display:grid;grid-template-columns:1fr auto;gap:10px;background:var(--bg-elev);border:1px solid var(--line);border-radius:10px;padding:10px 14px;align-items:center}
+  .skip .title{color:var(--ink-mute);font-size:14px}
+  .skip .reason{display:block;color:var(--ink-dim);font-size:12px;margin-top:3px}
+  .skip-label{font-family:var(--mono);font-size:10px;letter-spacing:.14em;color:var(--warn);background:rgba(255,184,107,.08);border:1px solid rgba(255,184,107,.25);padding:4px 8px;border-radius:6px;white-space:nowrap}
+
+  footer{margin-top:60px;padding-top:24px;border-top:1px solid var(--line);font-family:var(--mono);font-size:11px;letter-spacing:.14em;color:var(--ink-dim);display:flex;flex-wrap:wrap;gap:12px;justify-content:space-between}
+  footer a{color:var(--ink-mute)}
+</style>
+</head>
+<body>
+<div class="shell">
+
+  <header class="topbar">
+    <div class="brand">
+      <div class="brand-mark">PT</div>
+      <div>
+        <div class="brand-name"><b>PR&nbsp;TRIAGE&nbsp;CO-PILOT</b>&nbsp;&nbsp;v1.0</div>
+        <div class="brand-name" style="margin-top:4px">REVIEW-ORDER OPTIMIZER · ENGINEERING MANAGERS</div>
+      </div>
+    </div>
+    <div class="tags">
+      <a href="../" class="tag" style="color:var(--accent);border-color:rgba(124,247,210,.25);background:rgba(124,247,210,.04);text-decoration:none">← PORTFOLIO</a>
+      <span class="tag ai">★ AI POWERED</span>
+      <span class="tag">BYOK</span>
+    </div>
+  </header>
+
+  <section class="hero">
+    <div class="kicker">REVIEW-ORDER OPTIMIZER FOR ENGINEERING MANAGERS</div>
+    <h1>Your PR review order. <span class="hl">In 30 seconds, not 30 minutes.</span></h1>
+    <p class="lead">A triage tool for engineering managers and tech leads drowning in open PRs. Paste your backlog — counts, authors, ages, areas affected — and get back a <b>ranked review order, the first three to tackle now,</b> and a <b>skip-for-now</b> list with reasons.</p>
+  </section>
+
+  <div class="grid">
+
+    <section class="card">
+      <div class="card-h">
+        <span class="card-title">INPUT</span>
+        <span class="pill">BYOK · CLIENT-SIDE</span>
+      </div>
+
+      <div class="tabs" role="tablist">
+        <button class="tab active" data-tab="form" role="tab">Form</button>
+        <button class="tab" data-tab="paste" role="tab">Paste</button>
+        <button class="tab" data-tab="connectors" role="tab" disabled title="Coming soon">Connectors</button>
+      </div>
+
+      <div class="pane active" data-pane="form">
+        <div class="row">
+          <div>
+            <label for="backlog">Backlog state</label>
+            <input type="text" id="backlog" placeholder="14 open, 4 stale &gt;3d, 1 critical fix" />
+          </div>
+          <div>
+            <label for="time-budget">Time budget today</label>
+            <input type="text" id="time-budget" placeholder="60 min reviews this morning" />
+          </div>
+        </div>
+        <div class="row">
+          <div>
+            <label for="authors">Author mix</label>
+            <input type="text" id="authors" placeholder="6 eng · 1 new hire · 2 staff · 1 contractor" />
+          </div>
+          <div>
+            <label for="areas">Areas affected</label>
+            <input type="text" id="areas" placeholder="auth, dashboard, infra, docs" />
+          </div>
+        </div>
+        <div>
+          <label for="prs">Specific PRs (one per line — title, author, size, age, area)</label>
+          <textarea id="prs" style="min-height:160px" placeholder="#1234 auth-redesign refactor · maya (staff) · XL · 1d · auth
+#1240 fix typo in onboarding docs · jamal (senior) · S · 2h · docs
+#1255 first PR — onboarding script · sam (new hire) · M · 9d · infra
+#1199 dashboard cleanup · alex (senior) · L · 5d · dashboard
+#1262 critical: prod p2 incident hotfix · priya (staff) · M · 30m · infra
+#1265 weekend yak-shave · jamal (senior) · L · 3d · infra"></textarea>
+        </div>
+        <div style="margin-top:14px">
+          <label for="notes">Anything else (deadlines, blockers, priorities)</label>
+          <textarea id="notes" placeholder="Sam's PR has been open 9 days — ramp signal. Maya's PR blocks Sprint 22. Don't review Jamal's yak-shave today; he OOO from Wed." style="min-height:64px"></textarea>
+        </div>
+      </div>
+
+      <div class="pane" data-pane="paste">
+        <div>
+          <label for="paste">Paste your raw PR list — GitHub query export, Slack thread, anything</label>
+          <textarea id="paste" style="min-height:240px" placeholder="Paste anything — GitHub `gh pr list` output, a Slack standup thread, or a hand-written list. The model will extract titles, authors, ages, and propose a review order."></textarea>
+        </div>
+      </div>
+
+      <div class="pane" data-pane="connectors">
+        <p class="hint">Real GitHub integration coming in v2. For now: Form or Paste.</p>
+      </div>
+
+      <div style="margin-top:18px">
+        <label>AI Provider</label>
+        <div class="provider" id="provider">
+          <div class="prov active" data-prov="groq">GROQ<small>FREE TIER</small></div>
+          <div class="prov" data-prov="openai">OPENAI<small>GPT-4o-mini</small></div>
+          <div class="prov" data-prov="anthropic">CLAUDE<small>HAIKU 4.5</small></div>
+        </div>
+      </div>
+
+      <div style="margin-top:6px">
+        <label for="apikey">API key <span style="text-transform:none;color:var(--ink-dim)">(skip to run demo)</span></label>
+        <input type="password" id="apikey" placeholder="sk-... · gsk_... · sk-ant-..." autocomplete="off" />
+        <div class="hint">Key is used in-browser only — never sent to any server we control.
+          Get keys: <a href="https://console.groq.com/keys" target="_blank" rel="noopener">Groq</a> ·
+          <a href="https://platform.openai.com/api-keys" target="_blank" rel="noopener">OpenAI</a> ·
+          <a href="https://console.anthropic.com/settings/keys" target="_blank" rel="noopener">Anthropic</a>
+        </div>
+      </div>
+
+      <div class="actions">
+        <button class="btn" id="run">→ Rank My PRs</button>
+        <button class="btn ghost" id="demo">Try Demo</button>
+        <button class="btn ghost" id="export" hidden>Copy as Markdown</button>
+        <span class="status" id="status"></span>
+      </div>
+    </section>
+
+    <section class="card" id="output">
+      <div class="card-h">
+        <span class="card-title">REVIEW ORDER</span>
+        <span class="pill" id="provider-pill">—</span>
+      </div>
+      <div class="empty" id="empty">
+        Ranked review order will appear here after you submit.<br/>
+        Tip: hit <b style="color:var(--ink)">Try Demo</b> to preview the format with no key.
+      </div>
+      <div id="result" hidden>
+        <div class="section">
+          <h3 class="section-h">BACKLOG SUMMARY</h3>
+          <div class="summary" id="summary">—</div>
+        </div>
+
+        <div class="section">
+          <h3 class="section-h">FIRST THREE TO REVIEW NOW</h3>
+          <div class="first-three" id="first-three"></div>
+        </div>
+
+        <div class="section">
+          <h3 class="section-h">FULL REVIEW ORDER</h3>
+          <div class="order-list" id="order"></div>
+        </div>
+
+        <div class="section">
+          <h3 class="section-h">SKIP FOR NOW</h3>
+          <div class="skip-list" id="skip"></div>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <footer>
+    <span>PR TRIAGE CO-PILOT v1.0 · WEEK 3 / AI AUTOMATION SERIES</span>
+    <span>BUILT BY <a href="https://linkedin.com/in/nandat" target="_blank" rel="noopener" style="color:var(--ink-mute);text-decoration:underline">NANDA T</a>
+      &nbsp;·&nbsp;
+      <a href="https://github.com/nandudb/ai-automation" target="_blank" rel="noopener" style="color:var(--ink-mute);text-decoration:underline">SOURCE</a>
+      &nbsp;·&nbsp; BYOK · MIT</span>
+  </footer>
+</div>
+
+<script>
+const state = { tab: 'form', provider: 'groq', lastReport: null };
+
+document.querySelectorAll('.tab').forEach(t => {
+  t.addEventListener('click', () => {
+    if (t.disabled) return;
+    document.querySelectorAll('.tab').forEach(x => x.classList.remove('active'));
+    document.querySelectorAll('.pane').forEach(x => x.classList.remove('active'));
+    t.classList.add('active');
+    document.querySelector(`.pane[data-pane="${t.dataset.tab}"]`).classList.add('active');
+    state.tab = t.dataset.tab;
+  });
+});
+
+document.querySelectorAll('.prov').forEach(p => {
+  p.addEventListener('click', () => {
+    document.querySelectorAll('.prov').forEach(x => x.classList.remove('active'));
+    p.classList.add('active');
+    state.provider = p.dataset.prov;
+    document.getElementById('provider-pill').textContent = state.provider.toUpperCase();
+  });
+});
+
+function buildPrompt(input) {
+  return `You are a senior tech lead and the user's PR-review chief-of-staff. The user is an engineering manager or staff engineer with too many open PRs. Given their backlog, produce a strict review-order recommendation.
+
+Return STRICT JSON with this exact shape:
+{
+  "summary": "1 sentence describing the backlog state and the most important thing the user should know",
+  "review_order": [
+    {"pr": "#XXXX short title", "owner": "@person (role)", "size": "S|M|L|XL", "reason": "1-line why it's ranked here"}
+  ],
+  "first_three": ["#XXXX", "#YYYY", "#ZZZZ"],
+  "skip_for_now": [
+    {"pr": "#XXXX short title", "reason": "1-line why it can wait"}
+  ]
+}
+
+Ranking rules — the design call worth talking about:
+- Weight by impact × urgency × ramp-signal. Don't just rank by size.
+- Critical / on-call hotfixes go first, regardless of size.
+- New-hire PRs open > 3 days old get a +1 priority bump — ramp signals matter more than line count.
+- Staff/senior engineer PRs can wait longer than junior engineer PRs of the same size, because senior authors carry more context and can update reviewers.
+- A two-minute typo fix beats a one-hour deep review when context-switching is expensive — small wins early build momentum.
+- skip_for_now is for PRs where reviewing today produces low value (author OOO, dependent PR not merged, stale beyond rescue, etc.). Be honest.
+- first_three are the top 3 from review_order — exactly three.
+- Use the PR titles from the input verbatim where possible.
+- Output ONLY the JSON object. No prose, no markdown fence.
+
+USER INPUT
+==========
+${input}`;
+}
+
+function collectInput() {
+  if (state.tab === 'paste') return document.getElementById('paste').value.trim();
+  const f = id => document.getElementById(id).value.trim();
+  const parts = [];
+  if (f('backlog'))     parts.push(`Backlog state: ${f('backlog')}`);
+  if (f('time-budget')) parts.push(`Time budget today: ${f('time-budget')}`);
+  if (f('authors'))     parts.push(`Author mix: ${f('authors')}`);
+  if (f('areas'))       parts.push(`Areas affected: ${f('areas')}`);
+  if (f('prs'))         parts.push(`Specific PRs:\n${f('prs')}`);
+  if (f('notes'))       parts.push(`Notes:\n${f('notes')}`);
+  return parts.join('\n');
+}
+
+async function callGroq(key, prompt) {
+  const r = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+    method:'POST',
+    headers:{'Content-Type':'application/json','Authorization':`Bearer ${key}`},
+    body: JSON.stringify({ model: 'llama-3.3-70b-versatile', response_format: { type:'json_object' }, messages: [{ role:'user', content: prompt }], temperature: 0.2 })
+  });
+  if (!r.ok) throw new Error(`Groq ${r.status}: ${await r.text()}`);
+  const j = await r.json();
+  return j.choices[0].message.content;
+}
+async function callOpenAI(key, prompt) {
+  const r = await fetch('https://api.openai.com/v1/chat/completions', {
+    method:'POST',
+    headers:{'Content-Type':'application/json','Authorization':`Bearer ${key}`},
+    body: JSON.stringify({ model: 'gpt-4o-mini', response_format: { type:'json_object' }, messages: [{ role:'user', content: prompt }], temperature: 0.2 })
+  });
+  if (!r.ok) throw new Error(`OpenAI ${r.status}: ${await r.text()}`);
+  const j = await r.json();
+  return j.choices[0].message.content;
+}
+async function callAnthropic(key, prompt) {
+  const r = await fetch('https://api.anthropic.com/v1/messages', {
+    method:'POST',
+    headers:{'Content-Type':'application/json','x-api-key': key,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},
+    body: JSON.stringify({ model: 'claude-haiku-4-5-20251001', max_tokens: 1800, messages: [{ role:'user', content: prompt + '\n\nReply with the JSON object only.' }] })
+  });
+  if (!r.ok) throw new Error(`Anthropic ${r.status}: ${await r.text()}`);
+  const j = await r.json();
+  return (j.content?.[0]?.text || '').replace(/^```json\s*/i, '').replace(/```$/,'').trim();
+}
+const dispatcher = { groq: callGroq, openai: callOpenAI, anthropic: callAnthropic };
+
+const demo = {
+  summary: "14 open PRs, 4 stale >3d. One critical hotfix needs eyes now. New-hire Sam's first PR has been open 9 days — that's a ramp-signal more important than the bigger PRs ahead of it.",
+  review_order: [
+    { pr: "#1262 critical: prod p2 hotfix", owner: "@priya (staff)", size: "M", reason: "Hotfix in flight — review unblocks rollout." },
+    { pr: "#1240 fix typo in onboarding docs", owner: "@jamal (senior)", size: "S", reason: "Two-minute approval; clears the queue and builds momentum." },
+    { pr: "#1255 first PR — onboarding script", owner: "@sam (new hire)", size: "M", reason: "+1 bump: new-hire PR open 9 days. Ramp signal matters more than line count." },
+    { pr: "#1234 auth-redesign refactor", owner: "@maya (staff)", size: "XL", reason: "Blocks Sprint 22, but Maya can update reviewer context. Schedule deep review after lunch." },
+    { pr: "#1199 dashboard cleanup", owner: "@alex (senior)", size: "L", reason: "5d stale but low coupling. Review tomorrow." }
+  ],
+  first_three: ["#1262", "#1240", "#1255"],
+  skip_for_now: [
+    { pr: "#1265 weekend yak-shave", reason: "Author OOO from Wed. Reviewing today wastes the round-trip — wait for return." }
+  ]
+};
+
+function esc(s){ return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+
+function render(data) {
+  state.lastReport = data;
+  document.getElementById('empty').hidden = true;
+  document.getElementById('result').hidden = false;
+  document.getElementById('export').hidden = false;
+
+  document.getElementById('summary').innerHTML = esc(data.summary || '—');
+
+  const ft = document.getElementById('first-three');
+  const orderMap = Object.fromEntries((data.review_order || []).map(r => [extractId(r.pr), r]));
+  ft.innerHTML = (data.first_three || []).map((id, i) => {
+    const r = orderMap[extractId(id)] || { pr: id, owner: '—', size: '—', reason: '' };
+    return `<div class="ft">
+      <span class="n">${i+1}</span>
+      <div>
+        <div class="body">${esc(r.pr)}</div>
+        <span class="meta">${esc(r.owner || '')} · ${esc(r.size || '')}${r.reason ? ' · ' + esc(r.reason) : ''}</span>
+      </div>
+    </div>`;
+  }).join('');
+
+  const order = document.getElementById('order');
+  order.innerHTML = (data.review_order || []).map((r, i) => `
+    <div class="pr">
+      <span class="rank">${i+1}.</span>
+      <div>
+        <div class="title">${esc(r.pr)}</div>
+        <span class="reason">${esc(r.owner || '')} — ${esc(r.reason || '')}</span>
+      </div>
+      <span class="size ${esc((r.size || 'M').toUpperCase())}">${esc((r.size || 'M').toUpperCase())}</span>
+    </div>`).join('');
+
+  const skip = document.getElementById('skip');
+  if ((data.skip_for_now || []).length === 0) {
+    skip.innerHTML = `<div class="skip"><span class="title" style="color:var(--ink-dim)">Nothing to skip — review everything.</span><span class="skip-label">CLEAR</span></div>`;
+  } else {
+    skip.innerHTML = (data.skip_for_now || []).map(s => `
+      <div class="skip">
+        <div>
+          <div class="title">${esc(s.pr)}</div>
+          <span class="reason">${esc(s.reason || '')}</span>
+        </div>
+        <span class="skip-label">SKIP</span>
+      </div>`).join('');
+  }
+}
+
+function extractId(s) { const m = String(s).match(/#?(\d+)/); return m ? '#' + m[1] : s; }
+
+function toMarkdown(d) {
+  const lines = [];
+  lines.push(`# PR Triage Report\n`);
+  lines.push(`**Summary:** ${d.summary}\n`);
+  lines.push(`## First three to review now`);
+  (d.first_three || []).forEach((id, i) => lines.push(`${i+1}. ${id}`));
+  lines.push(`\n## Full review order`);
+  (d.review_order || []).forEach((r, i) => lines.push(`${i+1}. **${r.pr}** _(${r.owner}, ${r.size})_ — ${r.reason}`));
+  lines.push(`\n## Skip for now`);
+  (d.skip_for_now || []).forEach(s => lines.push(`- ${s.pr} — _${s.reason}_`));
+  return lines.join('\n');
+}
+
+const statusEl = document.getElementById('status');
+function setStatus(msg, kind=''){ statusEl.textContent = msg; statusEl.className = 'status ' + kind; }
+
+document.getElementById('demo').addEventListener('click', () => {
+  document.getElementById('provider-pill').textContent = 'DEMO';
+  setStatus('demo data loaded', 'ok');
+  render(demo);
+});
+
+document.getElementById('export').addEventListener('click', async () => {
+  if (!state.lastReport) return;
+  try { await navigator.clipboard.writeText(toMarkdown(state.lastReport)); setStatus('markdown copied', 'ok'); }
+  catch (e) { setStatus('clipboard blocked — select manually', 'err'); }
+});
+
+setTimeout(() => {
+  const ids = ['backlog','time-budget','authors','areas','prs','notes','paste','apikey'];
+  const touched = ids.some(id => (document.getElementById(id)?.value || '').length > 0);
+  if (!state.lastReport && !touched) {
+    document.getElementById('demo').click();
+    setStatus('demo loaded — paste your own backlog above', 'ok');
+  }
+}, 1200);
+
+document.getElementById('run').addEventListener('click', async () => {
+  const key = document.getElementById('apikey').value.trim();
+  const input = collectInput();
+  if (!input) { setStatus('add some input above', 'err'); return; }
+  if (!key)   { setStatus('no key — showing demo', 'ok'); render(demo); document.getElementById('provider-pill').textContent='DEMO'; return; }
+  setStatus('ranking…');
+  document.getElementById('provider-pill').textContent = state.provider.toUpperCase();
+  try {
+    const raw = await dispatcher[state.provider](key, buildPrompt(input));
+    const data = JSON.parse(raw);
+    render(data);
+    setStatus('done · ' + new Date().toLocaleTimeString(), 'ok');
+  } catch (err) {
+    console.error(err);
+    setStatus(String(err.message || err).slice(0,140), 'err');
+  }
+});
+</script>
+</body>
+</html>
